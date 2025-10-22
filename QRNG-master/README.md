@@ -1,39 +1,71 @@
 # QRNG
-
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
-
-#### 软件架构
-软件架构说明
+软件架构
+软件开发包初始化的主要工作是创建QRNG_context对象（核心结构体 ），并打开所需的通信接口 。通信接口分为三类 ：
 
 
-#### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+用户接口：使用以太网链路层通信 。主要功能包括设备参数的设置和读取、随机数输出控制、设备复位控制等 。
 
 
-#### 特技
+调试接口：使用串口通信 。功能与用户接口类似，主要用于参数设置、读取和控制 。
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+
+数据接口：可以使用以太网链路层通信或USB口通信 。其主要功能是接收随机数 。
+
+安装教程
+本开发包支持Windows和Linux平台 。
+
+
+Windows平台 
+
+
+头文件：QRNG.h 
+
+连接库文件：QRNG.lib 
+
+运行库文件：QRNG.dll、platform.dll、business.dll 
+
+
+Linux平台 
+
+
+头文件：QRNG.h 
+
+运行库文件：libqrng.so 
+
+运行环境：推荐 CentOS 6.6 64位 
+
+使用说明
+初始化上下文 调用 QRNG_init() 函数初始化，创建 QRNG_context 对象 。如果失败，将返回 NULL 。
+
+
+设置接口地址 根据通信方式，设置一个或多个接口地址：
+
+
+数据接口：调用 QRNG_set_data_address() 。此接口用于设置以太网或USB通道以接收随机数 。
+
+
+
+
+用户接口：调用 QRNG_set_user_address() 设置以太网用户接口 。
+
+
+
+
+调试接口：调用 QRNG_set_debug_address() 设置串口调试接口 。
+
+
+
+读取随机数 设置数据接口后 ，调用 QRNG_data_receive() 函数来读取随机数 。
+
+
+
+参数 pbuf 是用于存放随机数的缓存 ，rlen 是期望读取的数据长度 。
+
+
+返回值大于0时，表示实际读取到的随机数长度 。注意：实际获取的数据长度可能会小于请求的 rlen 长度 。
+
+
+返回值小于0时，表示发生错误 。
+
+释放上下文 使用完毕后，调用 QRNG_release() 释放 QRNG_context 对象 。
